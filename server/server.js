@@ -7,10 +7,19 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/movr', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+(async function connectMongoose() {
+  try {
+    const connection = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/movr', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    mongoose.connection.on('error', err => {
+      console.log(err);
+    })
+  } catch (err) {
+    console.log(err)
+  }
+})()
 
 app.use(require('./routes'));
 

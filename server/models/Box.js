@@ -32,5 +32,17 @@ const BoxSchema = new Schema(
             type: String,
             required: true,
         },
+    },
+    {
+        methods: {
+            getBoxImageBuffersArr() {
+                const itemArr = model('Item', this.items);
+                const itemImageBuffersArr = itemArr.map(item => item.imageBuffer);
+                return 'items';
+            }
+        },
     }
 );
+
+const Box = model('Box', BoxSchema);
+module.exports = Box;
