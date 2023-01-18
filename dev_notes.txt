@@ -1,2 +1,0 @@
-* Build wrapper functions for auth
-* Find auth npm package to use
