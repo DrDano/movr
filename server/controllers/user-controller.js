@@ -1,7 +1,5 @@
 const passport = require("passport");
-const { nextTick } = require("process");
-const {queryString} = require("query-string");
-const router = require("../routes");
+const queryString = import("query-string");
 
 const userController = {
     async login(req, res) {
@@ -9,7 +7,7 @@ const userController = {
             passport.authenticate("auth0", {
                 scope: "openid email profile"
             });
-            await res.redirect("/");
+            await res.redirect("/box");
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
