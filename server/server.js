@@ -19,7 +19,41 @@ const session = {
   saveUninitialized: false
 }
 
+const strategy = new Auth0Strategy(
+  {
+    domain: process.env.AUTH0_DOMAIN,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET,
+    callbackURL: process.env.AUTH0_CALLBACK_URL
+  },
+  
+  function(accessToken, refreshToken, extraParams, profile, done) {
+    return done(null, profile);
+  }
+);
+
 app.get("env") === "production" && (session.cookie.secure = true);
+
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
+app.use(express.static(path.join(__dirname, "public")));
+
+passport.use(strategy);
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.isAuthenticated();
+  next();
+});
 
 (async function connectMongoose() {
   try {
@@ -33,7 +67,7 @@ app.get("env") === "production" && (session.cookie.secure = true);
   } catch (err) {
     console.log(err);
   }
-})()
+})();
 
 app.use(require('./routes'));
 
