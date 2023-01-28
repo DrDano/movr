@@ -5,7 +5,7 @@ const apiRoutes = require('./api-routes');
 router.use('/', apiRoutes);
 
 router.use((req, res) => {
-    res.status(404).send("<h1>Sorry, we can't find the page you're looking for.<h1>")
+    res.send(req.oidc.isAuthenticated() ? 'Logged In' : 'Logged Out');
 });
 
 module.exports = router;

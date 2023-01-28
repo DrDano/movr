@@ -3,8 +3,6 @@ const express = require('express');
 const path = require('path');
 const expressSession = require('express-session');
 const { auth } = require('express-openid-connect');
-const passport = require('passport');
-const Auth0Strategy = require('passport-auth0');
 require('dotenv').config();
 
 const app = express();
@@ -21,48 +19,24 @@ const session = {
 };
 
 const config = {
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+  baseURL: process.env.BASE_URL,
+  clientID: process.env.AUTH0_CLIENT_ID,
+  secret: process.env.SESSION_SECRET,
   authRequired: false,
   auth0Logout: true,
-  secret: process.env.SESSION_SECRET,
-  baseURL: 'http://localhost:3000/',
-  clientID: process.env.AUTH0_CLIENT_ID,
-  issuerBaseURL: process.env.ISSUER_BASE_URL
 };
-
-const strategy = new Auth0Strategy(
-  {
-    domain: process.env.AUTH0_DOMAIN,
-    clientID: process.env.AUTH0_CLIENT_ID,
-    clientSecret: process.env.AUTH0_CLIENT_SECRET,
-    callbackURL: process.env.AUTH0_CALLBACK_URL
-  },
-  
-  function(accessToken, refreshToken, extraParams, profile, done) {
-    return done(null, profile);
-  }
-);
 
 app.get("env") === "production" && (session.cookie.secure = true);
 
-app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
-app.use(expressSession(session));
+// app.set("views", path.join(__dirname, "views"));
+// app.use(express.static(path.join(__dirname, "public")));
+// app.use(expressSession(session));
 app.use(auth(config));
 
-passport.use(strategy);
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-
 app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.isAuthenticated();
+  res.locals.isAuthenticated = req.oidc.isAuthenticated();
+  res.locals.activeRoute = req.oidc.originalUrl;
   next();
 });
 

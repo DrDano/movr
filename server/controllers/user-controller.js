@@ -1,13 +1,26 @@
-const passport = require("passport");
 const queryString = import("query-string");
 
 const userController = {
+    async signup(req, res) {
+        try {
+            const { page } = req.params;
+            res.oidc.login({
+                returnTo: page,
+                authorizationParams: {
+                    screen_hint: 'signup'
+                }
+            });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+    },
     async login(req, res) {
         try {
-            passport.authenticate("auth0", {
-                scope: "openid email profile"
+            const { page } = req.params;
+            res.oidc.login({
+                returnTo: page,
             });
-            await res.redirect("/box");
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -15,23 +28,7 @@ const userController = {
     },
     async callback(req, res) {
         try {
-            passport.authenticate("auth0", (err, user, info) => {
-                if (err) {
-                    return next(err);
-                }
-                if (!user) {
-                    return res.redirect('/login');
-                }
-                req.logIn(user, (err) => {
-                    if (err) {
-                        return next(err);
-                    }
-                    const returnTo = req.session.returnTo;
-                    delete req.session.returnTo;
-
-                    res.redirect(returnTo || "/");
-                });
-            });
+            
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -39,29 +36,11 @@ const userController = {
     },
     async logout(req, res) {
         try {
-           req.logOut();
-
-           let returnTo = req.protocol + '://' + req.hostname;
-           const port = req.connection.localPort;
-
-           if(port !== undefined && port !== 80 && port !== 443) {
-            returnTo = 
-                process.env.NODE_ENV === 'production' 
-                ? `${returnTo}/` 
-                : `${returnTo}:${port}/`;
-           }
-
-           const logoutURL = new URL(
-            `https://${process.env.AUTH0_DOMAIN}/v2/logout`
-           );
-
-           const searchString = queryString.stringify({
-            client_id: process.env.AUTH0_CLIENT_ID,
-            returnTo: returnTo
-           });
-
-           logoutURL.search = searchString;
-           res.redirect(logoutURL);
+            const { page } = req.params;
+            res.oidc.logout({
+                returnTo: page,
+            });
+           
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
