@@ -1,4 +1,3 @@
-const queryString = import("query-string");
 
 const userController = {
     async signup(req, res) {
@@ -26,15 +25,8 @@ const userController = {
             res.status(500).json(err);
         }
     },
-    async callback(req, res) {
-        try {
-            
-        } catch (err) {
-            console.log(err);
-            res.status(500).json(err);
-        }
-    },
     async logout(req, res) {
+        console.log(req.params)
         try {
             const { page } = req.params;
             res.oidc.logout({

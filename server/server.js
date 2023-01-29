@@ -23,15 +23,15 @@ const config = {
   baseURL: process.env.BASE_URL,
   clientID: process.env.AUTH0_CLIENT_ID,
   secret: process.env.SESSION_SECRET,
-  authRequired: false,
+  authRequired: true,
   auth0Logout: true,
 };
 
 app.get("env") === "production" && (session.cookie.secure = true);
 
-// app.set("views", path.join(__dirname, "views"));
-// app.use(express.static(path.join(__dirname, "public")));
-// app.use(expressSession(session));
+app.set("views", path.join(__dirname, "../client"));
+app.set("view engine", "hbs");
+app.use(express.static(path.join(__dirname, "public")));
 app.use(auth(config));
 
 app.use((req, res, next) => {

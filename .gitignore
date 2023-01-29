@@ -106,3 +106,6 @@ dist
 # Hidden system files
 .DS_Store
 Thumbs.db
+
+# Other
+dev_notes.txt
