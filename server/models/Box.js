@@ -3,10 +3,6 @@ const ItemSchema = require("./Item")
 
 const BoxSchema = new Schema(
     {
-        createdAt: {
-            type: Date,
-            default: Date.now,
-        },
         roomName: {
             type: String,
             required: true,
@@ -28,10 +24,6 @@ const BoxSchema = new Schema(
             type: Buffer,
             required: false,
         },
-        userId: {
-            type: String,
-            required: true,
-        },
     },
     {
         methods: {
@@ -41,8 +33,12 @@ const BoxSchema = new Schema(
                 return 'items';
             }
         },
+        timestamps: {
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+        },
     }
 );
 
-const Box = model('Box', BoxSchema);
-module.exports = Box;
+// const Box = model('Box', BoxSchema);
+module.exports = BoxSchema;

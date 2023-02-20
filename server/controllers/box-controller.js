@@ -1,9 +1,10 @@
-const { Box } = require("../models");
+const { User } = require("../models");
+const user = new User();
 
 const boxController = {
     async getAllBoxes(req, res) {
         try {
-            const boxData = await Box.find({});
+            const boxData = await User.getUser(req.oidc.user.sub).getAllBoxes();
             if (boxData.length < 1) {
                 console.log("You haven't started any boxes yet.");
                 res.status(404).json({message: "You haven't started any boxes yet."});

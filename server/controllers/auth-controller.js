@@ -1,5 +1,4 @@
-
-const userController = {
+const authController = {
     async signup(req, res) {
         try {
             const { page } = req.params;
@@ -16,9 +15,8 @@ const userController = {
     },
     async login(req, res) {
         try {
-            const { page } = req.params;
-            res.oidc.login({
-                returnTo: page,
+            await res.oidc.login({
+                returnTo: '/api',
             });
         } catch (err) {
             console.log(err);
@@ -26,13 +24,18 @@ const userController = {
         }
     },
     async logout(req, res) {
-        console.log(req.params)
         try {
-            const { page } = req.params;
-            res.oidc.logout({
-                returnTo: page,
-            });
-           
+            await res.oidc.logout();
+        } catch (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+    },
+    async getUser(req, res) {
+        try {
+            const userData = await req.oidc.user;
+            console.log(req.oidc.user.sub)
+            res.send(JSON.stringify(userData));
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -40,4 +43,4 @@ const userController = {
     },
 };
 
-module.exports = userController;
+module.exports = authController;

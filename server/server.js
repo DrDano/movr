@@ -11,27 +11,32 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 const session = {
   secret: process.env.SESSION_SECRET,
-  cookie: {},
+  cookie: {maxAge:500},
   resave: false,
   saveUninitialized: false
 };
+
+app.use(expressSession(session));
 
 const config = {
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
   baseURL: process.env.BASE_URL,
   clientID: process.env.AUTH0_CLIENT_ID,
   secret: process.env.SESSION_SECRET,
-  authRequired: true,
+  authRequired: false,
+  idpLogout: true,
   auth0Logout: true,
+  afterCallback: (req, res, session) => {
+    console.log(req.session);
+    return session;
+  },
 };
 
 app.get("env") === "production" && (session.cookie.secure = true);
 
-app.set("views", path.join(__dirname, "../client"));
-app.set("view engine", "hbs");
-app.use(express.static(path.join(__dirname, "public")));
 app.use(auth(config));
 
 app.use((req, res, next) => {
